@@ -1,0 +1,9 @@
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\bin\Debug\ListenerIEC104.exe.config
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\bin\Debug\ListenerIEC104.exe
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\bin\Debug\ListenerIEC104.pdb
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\obj\Debug\ListenerIEC104.csprojResolveAssemblyReference.cache
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\obj\Debug\ListenerIEC104.Properties.Resources.resources
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\obj\Debug\ListenerIEC104.csproj.GenerateResource.Cache
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\obj\Debug\ListenerIEC104.exe
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\obj\Debug\ListenerIEC104.pdb
+c:\users\mamchenko.as\documents\visual studio 2013\Projects\ListenerIEC104\ListenerIEC104\obj\Debug\ListenerIEC104.FormMain.resources
