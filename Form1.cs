@@ -69,7 +69,7 @@ namespace ListenerIEC104
                     //Console.WriteLine("Connected!");
                     AppendTextBox("Connected!");
 
-                    data = null;
+                    //data = null;
 
                     // Get a stream object for reading and writing
                     NetworkStream stream = client.GetStream();
@@ -78,8 +78,13 @@ namespace ListenerIEC104
 
                     // Loop to receive all the data sent by the client.
                     while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
-                    {                                             
-                        foreach (byte b in bytes)
+                    {
+                        data = DecoderIEC104.IECToString(bytes);
+                        AppendTextBox(data);
+
+                        data = null;
+                        
+                        /*foreach (byte b in bytes)
                         {
                             data = data + Convert.ToString(b, 2).PadLeft(8, '0') + " ";
                         }
@@ -95,7 +100,7 @@ namespace ListenerIEC104
                         int leghtASDU_int32 = Convert.ToInt32(bytes[1]);
                         AppendTextBox("Длинна APDU: " + Environment.NewLine + leghtASDU_IEC104 + " - " + leghtASDU_int32.ToString() + Environment.NewLine);
 
-                        data = null;
+                        data = null;*/
 
                         // Process the data sent by the client.
                         //data = data.ToUpper();
