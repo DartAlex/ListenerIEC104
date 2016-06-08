@@ -27,66 +27,68 @@ namespace ListenerIEC104
             return (Convert.ToInt32(bytes[1]));
         }
 
+        // Format control field
         private static string GetFormatControlFields(byte[] bytes)
         {
+            string data = null;
+
             BitArray bitsField1 = GetBitsOfByte(bytes[2]);
             BitArray bitsField2 = GetBitsOfByte(bytes[3]);
             BitArray bitsField3 = GetBitsOfByte(bytes[4]);
             BitArray bitsField4 = GetBitsOfByte(bytes[5]);
 
-            // Format I
-            // | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 |
-            // | Tx index number N(S)   LSB| 0 | - byte 1
-            // |MSB   TX index number N(S)     | - byte 2
-            // | Rx index number N(R)   LSB| 0 | - byte 3
-            // |MSB   TX index number N(R)     | - byte 4
-            //
-            // MSB - Senior bit
-            // LSB - Least bit
-
             if (bitsField1[0] == false)
             {
-                bool[] txIndexBool = new bool[15] 
-                {
-                    bitsField1[1],
-                    bitsField1[2],
-                    bitsField1[3],
-                    bitsField1[4],
-                    bitsField1[5],
-                    bitsField1[6],
-                    bitsField1[7],
-                    bitsField2[0],
-                    bitsField2[1],
-                    bitsField2[2],
-                    bitsField2[3],
-                    bitsField2[4],
-                    bitsField2[5],
-                    bitsField2[6],
-                    bitsField2[7]
-                };
-
-                BitArray txIndexBitArray = new BitArray(txIndexBool);
-                var result = new int[1];
-                txIndexBitArray.CopyTo(result, 0);
-                //txIndexBitArray.CopyTo(result, 0)
-
-                //BitArray TxIndexNum = new BitArray(new BitArray { bitsField1[1] }); 
-
-                return ("Format I " + result.ToString());
+                data = "Format I";
             }
 
             if (bitsField1[0] == true && bitsField1[1] == false)
             {
-                return ("Format S");
+                data = "Format S";
             }
 
             if (bitsField1[0] == true && bitsField1[1] == true)
-            {
-                return ("Format U");
+            {                
+                bool startdtAct = bitsField1[2];
+                bool startdtCon = bitsField1[3];
+
+                bool stopDtAct = bitsField1[4];
+                bool stopDtCon = bitsField1[5];
+
+                bool testfrAct = bitsField1[6];
+                bool testfrCon = bitsField1[7];
+
+                if (startdtAct == true)
+                {
+                    data = "Format U" + Environment.NewLine + "STARTDT act - Старт передачи данных. Активация.";
+                }
+
+                if (startdtCon == true)
+                {
+                    data = "Format U" + Environment.NewLine + "STARTDT con - Старт передачи данных. Подтверждение.";
+                }
+
+                if (stopDtAct == true)
+                {
+                    data = "Format U" + Environment.NewLine + "STOPDT act - Прекращение передачи данных. Активация.";
+                }
+
+                if (stopDtCon == true)
+                {
+                    data = "Format U" + Environment.NewLine + "STOPDT con - Прекращение передачи данных. Подтверждение.";
+                }
+
+                if (testfrAct == true)
+                {
+                    data = "Format U" + Environment.NewLine + "TESTDT act - Тестовый блок. Активация.";
+                }
+
+                if (testfrCon == true)
+                {
+                    data = "Format U" + Environment.NewLine + "TESTDT con - Тестовый блок. Подтверждение.";
+                }               
             }
-
-
-            return (Environment.NewLine);
+            return (data);
         }
 
         private static string GetStringOfByte(byte valueByte)
@@ -117,6 +119,7 @@ namespace ListenerIEC104
                 data = data + Convert.ToString(bytes[i], 2).PadLeft(8, '0') + " ";
             }
 
+            data = data + Environment.NewLine;
             data = data + Environment.NewLine;
             data = data + "Start 68H:" + GetStringOfByte(bytes[0]) + " - " + GetIntOfBytes(bytes[0]).ToString() + Environment.NewLine;
             data = data + "Lenght APDU:" + GetStringOfByte(bytes[1]) + " - " + GetIntOfBytes(bytes[1]).ToString() + Environment.NewLine;
