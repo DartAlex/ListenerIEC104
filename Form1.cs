@@ -30,7 +30,7 @@ namespace ListenerIEC104
                 this.Invoke(new Action<string>(AppendTextBox), new object[] { value });
                 return;
             }
-            textBoxConsole.AppendText(value + Environment.NewLine);
+            textBoxConsole.AppendText(Environment.NewLine + value);
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -41,7 +41,7 @@ namespace ListenerIEC104
         private void button1_Click(object sender, EventArgs e)
         {
             textBoxConsole.Clear();
-            textBoxConsole.AppendText("Start" + Environment.NewLine);
+            textBoxConsole.AppendText("Start");
             Application.DoEvents();
 
             GlobalVar.threadingRun = true;

@@ -52,32 +52,31 @@ namespace ListenerIEC104
                     // Loop to receive all the data sent by the client.
                     while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
-                        data = DecoderIEC104.IECToString(bytes);
+                        data = "Received: " + Environment.NewLine + DecoderIEC104.IECToString(bytes) + Environment.NewLine;
                         FormMain.EventSend.AppendTextBox(data);
+                        DecoderIEC104.ReadAPCI(bytes);
 
                         data = null;
 
                         // Process the data sent by the client.
 
-                        //byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+                        byte b1 = Convert.ToByte(104);
+                        byte b2 = Convert.ToByte(4);
+                        byte b3 = Convert.ToByte(11);
+                        byte b4 = Convert.ToByte(0);
+                        byte b5 = Convert.ToByte(0);
+                        byte b6 = Convert.ToByte(0);
 
-                        //byte[] answer = BitConverter.GetBytes(bytes);
+                        byte[] answer = new byte[6] { b1, b2, b3, b4, b5, b6 };
+
+                        data = "Transmitted: " + Environment.NewLine + DecoderIEC104.IECToString(answer) + Environment.NewLine;
+                        FormMain.EventSend.AppendTextBox(data);
+
+                        data = null;
 
                         // Send back a response.
-                        //stream.Write(msg, 0, msg.Length);
-
-                        /*stream.Write(bytes, 0, bytes.Length);
-                        foreach (byte b in bytes)
-                        {
-                            data = data + b.ToString();
-                        }
-
-                        Console.WriteLine("Sent: {0}", data);
-
-                        data = null;*/
-
+                        stream.Write(answer, 0, answer.Length);
                     }
-
                     // Shutdown and end connection
                     client.Close();
                 }
