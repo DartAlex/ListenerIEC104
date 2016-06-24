@@ -45,15 +45,28 @@ namespace ListenerIEC104
             Application.DoEvents();
 
             GlobalVar.threadingRun = true;
-            GlobalVar.port = 2405;
-            Thread SocketListenThread = new Thread(ClientConnectorIEC104.SocketListen);
+            GlobalVar.port = port;
+            //Thread SocketListenThread = new Thread(Server.AsynchronousSocketListener.StartListening);
+            Thread SocketListenThread = new Thread(ConnectorIEC104.SocketListen);
+            //Thread SocketListenThread = new Thread(Client.RunServer);
             SocketListenThread.Start();
+            //ConnectorIEC104.SocketListen();
          
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             GlobalVar.threadingRun = false;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ConnectorIEC104.Connect();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            ConnectorIEC104.SendData(EncoderIEC104.FormatUStartAct());           
         }
     }
 }
