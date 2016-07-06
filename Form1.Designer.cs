@@ -28,25 +28,29 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBoxConsole = new System.Windows.Forms.TextBox();
+            this.ServerConsole = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.ClientConsole = new System.Windows.Forms.TextBox();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textBoxConsole
+            // ServerConsole
             // 
-            this.textBoxConsole.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxConsole.Location = new System.Drawing.Point(0, 0);
-            this.textBoxConsole.Multiline = true;
-            this.textBoxConsole.Name = "textBoxConsole";
-            this.textBoxConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxConsole.Size = new System.Drawing.Size(624, 412);
-            this.textBoxConsole.TabIndex = 1;
+            this.ServerConsole.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ServerConsole.Location = new System.Drawing.Point(0, 0);
+            this.ServerConsole.Multiline = true;
+            this.ServerConsole.Name = "ServerConsole";
+            this.ServerConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.ServerConsole.Size = new System.Drawing.Size(318, 412);
+            this.ServerConsole.TabIndex = 1;
             // 
             // button1
             // 
@@ -100,20 +104,55 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.ServerConsole);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.ClientConsole);
+            this.splitContainer1.Size = new System.Drawing.Size(622, 412);
+            this.splitContainer1.SplitterDistance = 318;
+            this.splitContainer1.TabIndex = 6;
+            // 
+            // ClientConsole
+            // 
+            this.ClientConsole.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ClientConsole.Location = new System.Drawing.Point(0, 0);
+            this.ClientConsole.Multiline = true;
+            this.ClientConsole.Name = "ClientConsole";
+            this.ClientConsole.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.ClientConsole.Size = new System.Drawing.Size(300, 412);
+            this.ClientConsole.TabIndex = 2;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 441);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBoxConsole);
             this.Name = "FormMain";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -121,12 +160,14 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBoxConsole;
+        private System.Windows.Forms.TextBox ServerConsole;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TextBox ClientConsole;
     }
 }
 

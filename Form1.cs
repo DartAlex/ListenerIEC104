@@ -23,14 +23,24 @@ namespace ListenerIEC104
             EventSend = this;
         }
 
-        public void AppendTextBox(string value)
+        public void AppendClientConsole(string value)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string>(AppendTextBox), new object[] { value });
+                this.Invoke(new Action<string>(AppendClientConsole), new object[] { value });
                 return;
             }
-            textBoxConsole.AppendText(Environment.NewLine + value);
+            ClientConsole.AppendText(Environment.NewLine + value);
+        }
+
+        public void AppendServerConsole(string value)
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action<string>(AppendServerConsole), new object[] { value });
+                return;
+            }
+            ServerConsole.AppendText(Environment.NewLine + value);
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -40,12 +50,12 @@ namespace ListenerIEC104
 
         private void button1_Click(object sender, EventArgs e)
         {
-            textBoxConsole.Clear();
-            textBoxConsole.AppendText("Start");
+            ServerConsole.Clear();
+            ServerConsole.AppendText("Start");
             Application.DoEvents();
 
             GlobalVar.threadingRun = true;
-            GlobalVar.port = port;
+            GlobalVar.port = 2405;
             //Thread SocketListenThread = new Thread(Server.AsynchronousSocketListener.StartListening);
             Thread SocketListenThread = new Thread(ConnectorIEC104.SocketListen);
             //Thread SocketListenThread = new Thread(Client.RunServer);
@@ -61,12 +71,13 @@ namespace ListenerIEC104
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ConnectorIEC104.Connect();
+            //ConnectorIEC104.Connect();
+            //ConnectorIEC104.BeginConnect();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            ConnectorIEC104.SendData(EncoderIEC104.FormatUStartAct());           
+            //ConnectorIEC104.SendData(EncoderIEC104.FormatUStartAct());           
         }
     }
 }

@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="APCI.cs" />
     <Compile Include="ASDUinfo.cs" />
     <Compile Include="ConnectorIEC104.cs" />
     <Compile Include="DecoderIEC104.cs" />
