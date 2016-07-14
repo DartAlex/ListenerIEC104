@@ -31,99 +31,91 @@ namespace ListenerIEC104
         }
 
         // Connect as client
-        public static async void SocketListen()
-        {           
+        public static void SocketListen()
+        {
             TcpListener tcpListener = null;
             try
             {
-                Int32 port = GlobalVar.port;
+                Int32 port = GlobalVar.portListen;
                 IPAddress localAddr = Dns.GetHostAddresses(Dns.GetHostName())[1];
 
                 tcpListener = new TcpListener(localAddr, port);
                 tcpListener.Start();
-              
+
                 while (GlobalVar.threadingRun == true)
                 {
+                    Socket sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                     try
                     {
+                        Connect(sender);
+                        
                         FormMain.EventSend.AppendServerConsole("Waiting for a connection...");
                         TcpClient tcpClient = tcpListener.AcceptTcpClient();
                         FormMain.EventSend.AppendServerConsole("Connected!");
 
                         NetworkStream stream = tcpClient.GetStream();
 
-                        while (tcpClient.Connected && GlobalVar.threadingRun == true)
+                        while (tcpClient.Connected && sender.Connected && GlobalVar.threadingRun == true)
                         {
 
                             byte[] bytes = new byte[255];
-
-                            await stream.ReadAsync(bytes, 0, bytes.Length);
+                            // recerved
+                            stream.Read(bytes, 0, bytes.Length);
                             bytes = DecoderIEC104.ParseLengthPacket(bytes);
                             ShowServerReceived(bytes);
-                            byte[] temp = DecoderIEC104.Read(bytes);
 
-                            byte[] answer = SendData(bytes);
-                            ShowServerTransmitted(answer);
-                            byte[] temp2 = DecoderIEC104.Read(answer);
-                            await stream.WriteAsync(answer, 0, answer.Length);
-
+                            if (DecoderIEC104.HeaderPacket(bytes[0]))
+                            {
+                                FormMain.EventSend.AppendServerConsole(DecoderIEC104.Read(bytes));
+                                // tranclate
+                                byte[] answer = SendData(bytes, sender);
+                                ShowServerTransmitted(answer);
+                                FormMain.EventSend.AppendServerConsole(DecoderIEC104.Read(answer));
+                                stream.Write(answer, 0, answer.Length);
+                            }
+                            else
+                            {
+                                break;
+                            }                         
                         }
                         // Shutdown and end connection
+                        sender.Close();
                         tcpClient.Close();
                         FormMain.EventSend.AppendServerConsole("Close connection" + Environment.NewLine);
+                        FormMain.EventSend.AppendClientConsole("Close connection" + Environment.NewLine);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
-                        FormMain.EventSend.AppendServerConsole("Server close connection" + Environment.NewLine);
-                        //CloseConnection();
-                    }                                   
+                        FormMain.EventSend.AppendServerConsole("Server close connection " + e.ToString() + Environment.NewLine);
+                        sender.Close();
+                        FormMain.EventSend.AppendClientConsole("Close connection" + Environment.NewLine);
+                    }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 FormMain.EventSend.AppendServerConsole("From serever: " + e.ToString() + Environment.NewLine);
             }
             finally
-            {
-                // Stop listening for new clients.                
+            {               
                 tcpListener.Stop();
                 FormMain.EventSend.AppendServerConsole("Server stop" + Environment.NewLine);
             }
         }
 
-        // Create a TCP/IP  socket.
-        private static Socket sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-        public static ManualResetEvent allDone = new ManualResetEvent(false);
-
-        public static void ConnectCallback(IAsyncResult ar)
+        public static void Connect(Socket sender)
         {
-            allDone.Set();
-            Socket s = (Socket)ar.AsyncState;
-            s.EndConnect(ar);
-        }
-
-        public static void Connect()
-        {
-            //CloseConnection();
-            if (sender.Connected) return;
-
-            byte[] bytes = new byte[255];
-
             // Connect to a remote device.
             try
             {
-                // Establish the remote endpoint for the socket.
-                IPAddress ipAddress = IPAddress.Parse("ip adress");
+                IPAddress ipAddress = IPAddress.Parse(GlobalVar.ipSender);
+                Int32 port = GlobalVar.portSender;
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
-                // Connect the socket to the remote endpoint. Catch any errors.
+
                 try
                 {
-                    sender.BeginConnect(ipAddress, 2458, new AsyncCallback(ConnectCallback), sender);
-                    FormMain.EventSend.AppendClientConsole("Socket connected to " + sender.RemoteEndPoint.ToString());
-                    allDone.WaitOne();
-
-                    
+                    sender.Connect(remoteEP);
+                    FormMain.EventSend.AppendClientConsole("Socket connected to " + sender.RemoteEndPoint.ToString());               
                 }
                 catch (ArgumentNullException ane)
                 {
@@ -144,38 +136,18 @@ namespace ListenerIEC104
             }
         }
 
-        public static byte[] SendData(byte[] bytes)
+        public static byte[] SendData(byte[] bytes, Socket sender)
         {
-            FormMain.EventSend.AppendClientConsole("Connected " + sender.Connected.ToString());
-
-            if (sender.Connected == false)
-            {
-                Connect();
-            }
-
             byte[] answer = new byte[255];
 
-            // Send the data through the socket.
             int bytesSent = sender.Send(bytes);
             ShowClientTransmitted(bytes);
-            // Receive the response from the remote device.
-            int bytesRec = sender.Receive(answer);           
-            answer = DecoderIEC104.ParseLengthPacket(answer);
+
+            int bytesRec = sender.Receive(answer);
+            answer = DecoderIEC104.ParseLengthPacket(answer); 
 
             ShowClientReceived(answer);
             return (answer);
-        }
-
-        private static void CloseConnection()
-        {
-            try
-            {
-                // Release the socket.
-                //sender.Shutdown(SocketShutdown.Both);
-                //sender.Close();
-                sender.Dispose();
-            }
-            catch { }
         }
     }
 }

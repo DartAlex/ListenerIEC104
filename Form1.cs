@@ -52,16 +52,17 @@ namespace ListenerIEC104
         {
             ServerConsole.Clear();
             ServerConsole.AppendText("Start");
+            ClientConsole.Clear();
+            ClientConsole.AppendText("Start");
             Application.DoEvents();
 
             GlobalVar.threadingRun = true;
-            GlobalVar.port = 2405;
-            //Thread SocketListenThread = new Thread(Server.AsynchronousSocketListener.StartListening);
+            GlobalVar.portListen = 8080;
+            GlobalVar.ipSender = "192.168.1.1";
+            GlobalVar.portSender = 8080;
+
             Thread SocketListenThread = new Thread(ConnectorIEC104.SocketListen);
-            //Thread SocketListenThread = new Thread(Client.RunServer);
-            SocketListenThread.Start();
-            //ConnectorIEC104.SocketListen();
-         
+            SocketListenThread.Start();        
         }
 
         private void button2_Click(object sender, EventArgs e)

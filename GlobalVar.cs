@@ -9,6 +9,8 @@ namespace ListenerIEC104
     class GlobalVar
     {
         public static bool threadingRun { get; set; }
-        public static Int32 port { get; set; }
+        public static Int32 portListen { get; set; }
+        public static string ipSender { get; set; }
+        public static Int32 portSender { get; set; }        
     }
 }

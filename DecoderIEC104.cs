@@ -32,6 +32,32 @@ namespace ListenerIEC104
 
     class DecoderIEC104
     {
+        private static List<string> logList = new List<string>();
+
+        private static void AddLog(string log)
+        {
+            logList.Add(log);
+        }
+
+        private static string ResultLog()
+        {
+            string result = String.Join(Environment.NewLine, logList.ToArray());
+            logList.Clear();
+            return(result);
+        }
+
+        public static bool HeaderPacket(byte headerByte)
+        {
+            bool result = false;
+
+            if (Convert.ToInt32(headerByte) == 104)
+            {
+                result = true;
+            }
+                
+            return (result);
+        }
+        
         private static string GetStringOfByte(byte valueByte)
         {
             string binByte = Convert.ToString(valueByte, 2).PadLeft(8, '0');
@@ -51,18 +77,6 @@ namespace ListenerIEC104
         }
 
         // To String
-        /*public static string IECToString(byte[] bytes)
-        {
-            string data = null;
-
-            for (int i = 0; i <= PacketLenght(bytes) + 1; i++)
-            {
-                data = data + Convert.ToString(bytes[i], 2).PadLeft(8, '0') + " ";
-            }
-            return (data);
-        }*/
-
-        // To String
         public static string IECToString(byte[] bytes)
         {
             string data = null;
@@ -73,8 +87,6 @@ namespace ListenerIEC104
             }
             return (data);
         }
-
-
 
         public static byte[] ParseLengthPacket(byte[] bytes)
         {
@@ -89,9 +101,9 @@ namespace ListenerIEC104
             return(result);
         }
 
-        public static byte[] Read(byte[] bytes)
+        public static string Read(byte[] bytes)
         {
-            byte[] answer = null;
+            //byte[] answer = null;
             byte[] bytesAPCI = new byte[] 
             { 
                 bytes[0],
@@ -106,19 +118,25 @@ namespace ListenerIEC104
           
             if (apci.headerByte == true)
             {
-                FormMain.EventSend.AppendServerConsole("Protocol is IEC104");
-                FormMain.EventSend.AppendServerConsole("Lenght APDU: " + apci.lenghtAPDU);
+                AddLog("Protocol is IEC104");
+                AddLog("Lenght APDU: " + apci.lenghtAPDU);
                 
                 if (apci.formatI == true)
                 {
-                    FormMain.EventSend.AppendServerConsole("Format I; N(S) = " + apci.nS + "; N(R) = " + apci.nR);
-                    ReadASDU(bytes, apci.lenghtAPDU);
+                    AddLog("Format I; N(S) = " + apci.nS + "; N(R) = " + apci.nR);
+                    if (bytes.Length > 6)
+                    {
+                        ReadASDU(bytes, apci.lenghtAPDU);
+                    }                
                 }
 
                 if (apci.formatS == true)
                 {
-                    FormMain.EventSend.AppendServerConsole("Format S; N(R) = " + apci.nR);
-                    ReadASDU(bytes, apci.lenghtAPDU);
+                    AddLog("Format S; N(R) = " + apci.nR);
+                    if (bytes.Length > 6)
+                    {
+                        ReadASDU(bytes, apci.lenghtAPDU);
+                    }                 
                 }
 
                 if (apci.formatU == true)
@@ -127,13 +145,13 @@ namespace ListenerIEC104
                     {
                         if (apci.act == true)
                         {
-                            FormMain.EventSend.AppendServerConsole("Format U STARTDT act - Старт передачи данных. Активация.");
-                            answer = EncoderIEC104.FormatUStartCon();
+                            AddLog("Format U STARTDT act - Старт передачи данных. Активация.");
+                            //answer = EncoderIEC104.FormatUStartCon();
                         }
 
                         if (apci.con == true)
                         {
-                            FormMain.EventSend.AppendServerConsole("Format U STARTDT con - Старт передачи данных. Подтверждение.");
+                            AddLog("Format U STARTDT con - Старт передачи данных. Подтверждение.");
                         }
                     }
 
@@ -141,13 +159,13 @@ namespace ListenerIEC104
                     {
                         if (apci.act == true)
                         {
-                            FormMain.EventSend.AppendServerConsole("Format U STOPDT act - Прекращение передачи данных. Активация.");
-                            answer = EncoderIEC104.FormatUStopCon();
+                            AddLog("Format U STOPDT act - Прекращение передачи данных. Активация.");
+                            //answer = EncoderIEC104.FormatUStopCon();
                         }
 
                         if (apci.con == true)
                         {
-                            FormMain.EventSend.AppendServerConsole("Format U STOPDT con - Прекращение передачи данных. Подтверждение.");
+                            AddLog("Format U STOPDT con - Прекращение передачи данных. Подтверждение.");
                         }
                     }
 
@@ -155,18 +173,18 @@ namespace ListenerIEC104
                     {
                         if (apci.act == true)
                         {
-                            FormMain.EventSend.AppendServerConsole("Format U TESTFR act - Тестовый блок. Активация.");
-                            answer = EncoderIEC104.FormatUTestCon();
+                            AddLog("Format U TESTFR act - Тестовый блок. Активация.");
+                            //answer = EncoderIEC104.FormatUTestCon();
                         }
 
                         if (apci.con == true)
                         {
-                            FormMain.EventSend.AppendServerConsole("Format U TESTFR con - Тестовый блок. Подтверждение.");
+                            AddLog("Format U TESTFR con - Тестовый блок. Подтверждение.");
                         }
                     }
                 }
             }
-            return (answer);
+            return (ResultLog());
         }
 
         private static APCIStruct ReadAPCI(byte[] bytes)
@@ -337,12 +355,9 @@ namespace ListenerIEC104
         // ASDU
         private static void ReadASDU(byte[] bytes, int packetLenght)
         {
-            string log;
-
             // Индетификатор типов
             int intType = GetIntOfBytes(bytes[6]);
-            log = "Индетификатор типов: " + ASDUinfo.TypeIdentifier(intType);
-            FormMain.EventSend.AppendServerConsole(log);
+            AddLog("Индетификатор типов: " + ASDUinfo.TypeIdentifier(intType));
 
             // Классификатор переменной структуры
             BitArray bits7 = GetBitsOfByte(bytes[7]);
@@ -361,51 +376,50 @@ namespace ListenerIEC104
 
             if (intN[0] == 0)
             {
-                log = "ASDU не содержит информационных объектов";
-
+                AddLog("ASDU не содержит информационных объектов");
             }
             else
             {
                 if (bits7[7] == false)
                 {
-                    log = "Число информационных объектов: " + intN[0].ToString();
+                    AddLog("Число информационных объектов: " + intN[0].ToString());
                 }
                 else
                 {
-                    log = "Число информационных элементов: " + intN[0].ToString();
+                    AddLog("Число информационных элементов: " + intN[0].ToString());                   
                 }
             }
 
-            FormMain.EventSend.AppendServerConsole(log);
-
             // Причины передачи
-            TransferReasonStruct transferReasonStruct = TransferReason(bytes[8]);
-            log = "Причины передачи: " + transferReasonStruct.reason;
+            TransferReasonStruct transferReasonStruct = TransferReason(bytes[8]);           
+            string data = "Причины передачи: " + transferReasonStruct.reason;
+
             if (transferReasonStruct.confirmation == true)
             {
-                log = log + ", положительное подтверждение";
+                
+                data = data + ", положительное подтверждение";
             }
             else
             {
-                log = log + ", отрицательное подтверждение";
+                data = data + ", отрицательное подтверждение";
             }
             if (transferReasonStruct.test == true)
             {
-                log = log + ", тест";
+                data = data + ", тест";
             }
             else
             {
-                log = log + ", не тест";
+                data = data + ", не тест";
             }
-            FormMain.EventSend.AppendServerConsole(log);
+            AddLog(data);
 
             // Номер инициирующего адреса
-            FormMain.EventSend.AppendServerConsole("Номер инициирующего адреса: " + GetIntOfBytes(bytes[9]));
+            AddLog("Номер инициирующего адреса: " + GetIntOfBytes(bytes[9]));
 
             // Общий адрес ASDU
             byte[] byteGeneralAddressASDU = new byte[] { bytes[10], bytes[11] };
             int intGeneralAddressASDU = GeneralAddressASDU(byteGeneralAddressASDU);
-            FormMain.EventSend.AppendServerConsole("Общий адрес ASDU: " + intGeneralAddressASDU.ToString());
+            AddLog("Общий адрес ASDU: " + intGeneralAddressASDU.ToString());
 
             // Объекты информации
             List<byte> byteObjectInformation = new List<byte>();
@@ -413,7 +427,7 @@ namespace ListenerIEC104
             {
                 byteObjectInformation.Add(bytes[i]);
             }
-            FormMain.EventSend.AppendServerConsole(ObjectsInformation(byteObjectInformation, ASDUinfo.TypeIdentifier(intType)));          
+            AddLog(ObjectsInformation(byteObjectInformation, ASDUinfo.TypeIdentifier(intType)));
         }
 
         private static string ObjectsInformation(List<byte> listBytes, string identifierTypes)
